@@ -1,4 +1,4 @@
-# Count Down Timer with Events
+# Count Down Timer with EventHandler<> Delegate.
 
 Intermediate level task for practice events. 
 
