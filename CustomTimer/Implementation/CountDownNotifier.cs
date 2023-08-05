@@ -4,19 +4,27 @@ using CustomTimer.Interfaces;
 
 namespace CustomTimer.Implementation
 {
-    /// <inheritdoc/>
     public class CountDownNotifier : ICountDownNotifier
     {
-        /// <inheritdoc/>
+#pragma warning disable SA1309
+        private readonly Timer _timer;
+#pragma warning restore SA1309
+
+        public CountDownNotifier(Timer timer)
+        {
+            this._timer = timer;
+        }
+
         public void Init(EventHandler<StartedEventArgs>? startHandler, EventHandler<StoppedEventArgs>? stopHandler, EventHandler<TickEventArgs>? tickHandler)
         {
-            throw new NotImplementedException();
+            this._timer.Started += startHandler;
+            this._timer.Stopped += stopHandler;
+            this._timer.Tick += tickHandler;
         }
-        
-        /// <inheritdoc/>
+
         public void Run()
         {
-            throw new NotImplementedException();
+            this._timer.Run();
         }
     }
 }

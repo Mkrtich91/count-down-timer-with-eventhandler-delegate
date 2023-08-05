@@ -1,4 +1,5 @@
 ﻿using System;
+using CustomTimer.EventArgsClasses;
 
 namespace CustomTimer
 {
@@ -22,12 +23,62 @@ namespace CustomTimer
         /// </summary>
         /// <param name="timerName">Name.</param>
         /// <param name="ticks">Ticks.</param>
-        public Timer(string timerName, int ticks)
+        public event EventHandler<StartedEventArgs> Started;
+
+        public event EventHandler<TickEventArgs> Tick;
+
+        public event EventHandler<StoppedEventArgs> Stopped;
+
+        public string Name { get; }
+
+        public int Ticks { get; }
+
+#pragma warning disable CS8618
+#pragma warning disable SA1201
+        public Timer(string name, int ticks)
+#pragma warning restore SA1201
+#pragma warning restore CS8618
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name cannot be null or empty.");
+            }
+
+            if (ticks <= 0)
+            {
+                throw new ArgumentException("Number of ticks has to be greater than 0.");
+            }
+
+            this.Name = name;
+            this.Ticks = ticks;
         }
-        
-        // TODO: Add implementation here.
-        // Don't use .NET timers classes implementation.
+
+        public void Run()
+        {
+            this.OnStarted();
+
+            for (int tick = this.Ticks; tick > 0; tick--)
+            {
+                this.OnTick(tick - 1);
+                Thread.Sleep(1000);
+            }
+
+            this.OnStopped();
+        }
+
+        protected virtual void OnStarted()
+        {
+            this.Started?.Invoke(this, new StartedEventArgs(this.Name, this.Ticks));
+        }
+
+        protected virtual void OnTick(int ticksLeft)
+        {
+            this.Tick?.Invoke(this, new TickEventArgs(this.Name, ticksLeft));
+        }
+
+        protected virtual void OnStopped()
+        {
+            this.Stopped?.Invoke(this, new StoppedEventArgs(this.Name));
+        }
     }
 }
